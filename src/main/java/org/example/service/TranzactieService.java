@@ -48,17 +48,51 @@ public class TranzactieService {
 
     }
 
-    public Integer MostActiveClient(){
-        List<Integer> listOfClientIds = new ArrayList<>();
-        List<Tranzactie> tranzaction = (List<Tranzactie>) repository.findAll();
-        for (Tranzactie tranzactie: tranzaction) {
-            listOfClientIds.add(tranzactie.getId_client());
-        }
-        Integer id = listOfClientIds.stream()
-                .reduce(BinaryOperator.maxBy((o1, o2) -> Collections.frequency(listOfClientIds, o1) -
-                        Collections.frequency(listOfClientIds, o2))).orElse(null);
+    // the first classic version for MostActiveClient method
 
-        return id;
+//    public Integer MostActiveClient(){
+//        List<Integer> listOfClientIds = new ArrayList<>();
+//        List<Tranzactie> tranzaction = (List<Tranzactie>) repository.findAll();
+//        for (Tranzactie tranzactie: tranzaction) {
+//            listOfClientIds.add(tranzactie.getId_client());
+//        }
+//        Integer id = listOfClientIds.stream()
+//                .reduce(BinaryOperator.maxBy((o1, o2) -> Collections.frequency(listOfClientIds, o1) -
+//                        Collections.frequency(listOfClientIds, o2))).orElse(null);
+//
+//        return id;
+//    }
+
+
+    // second version for MostActiveClient method
+
+//    public Integer MostActiveClient(){
+//        List<Integer> listOfClientIds = new ArrayList<>();
+//        List<Tranzactie> tranzaction = (List<Tranzactie>) repository.findAll();
+//        for (Tranzactie tranzactie: tranzaction) {
+//            listOfClientIds.add(tranzactie.getId_client());
+//        }
+//        Integer id = listOfClientIds.stream()
+//                .reduce(BinaryOperator.maxBy(Comparator.comparingInt(o -> Collections.frequency(listOfClientIds, o))))
+//                .orElse(null);
+//
+//        return id;
+//    }
+
+
+    // the third advanced version for MostActiveClient method
+    public Integer MostActiveClient() {
+        List<Tranzactie> transactions = StreamSupport.stream(repository.findAll().spliterator(), false)
+                .collect(Collectors.toList());
+
+        Map<Integer, Long> transactionCounts = transactions.stream()
+                .collect(Collectors.groupingBy(Tranzactie::getId_client, Collectors.counting()));
+
+        return transactionCounts.entrySet()
+                .stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
     }
 
     public List<Tranzactie> getListaTranzactiiPeInterval(String inceputInterval, String sfarsitInterval) throws ParseException {
