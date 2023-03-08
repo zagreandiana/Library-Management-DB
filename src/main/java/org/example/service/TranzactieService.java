@@ -95,21 +95,40 @@ public class TranzactieService {
                 .orElse(null);
     }
 
+    // classic version
+
+//    public List<Tranzactie> getListaTranzactiiPeInterval(String inceputInterval, String sfarsitInterval) throws ParseException {
+//        List<Tranzactie> getListaTranzactiiPeInterval = new ArrayList<>();
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+//        inceputInterval = inceputInterval.replace("~", " ");
+//        sfarsitInterval = sfarsitInterval.replace("~", " ");
+//        LocalDateTime DeLa = LocalDateTime.parse(inceputInterval, formatter);
+//        LocalDateTime PanaLa = LocalDateTime.parse(sfarsitInterval, formatter);
+//        for (Tranzactie tranzactie : this.getAllT()) {
+//            LocalDateTime tranzactieDateTime = LocalDateTime.parse(tranzactie.getDataSiOra(), formatter);
+//            if (tranzactieDateTime.equals(DeLa) || tranzactieDateTime.isAfter(DeLa) && tranzactieDateTime.isBefore(PanaLa)) {
+//                getListaTranzactiiPeInterval.add(tranzactie);
+//            }
+//
+//        }
+//        return getListaTranzactiiPeInterval;
+//
+//    }
+
+
+    // version with lambda
     public List<Tranzactie> getListaTranzactiiPeInterval(String inceputInterval, String sfarsitInterval) throws ParseException {
-        List<Tranzactie> getListaTranzactiiPeInterval = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         inceputInterval = inceputInterval.replace("~", " ");
         sfarsitInterval = sfarsitInterval.replace("~", " ");
         LocalDateTime DeLa = LocalDateTime.parse(inceputInterval, formatter);
         LocalDateTime PanaLa = LocalDateTime.parse(sfarsitInterval, formatter);
-        for (Tranzactie tranzactie : this.getAllT()) {
-            LocalDateTime tranzactieDateTime = LocalDateTime.parse(tranzactie.getDataSiOra(), formatter);
-            if (tranzactieDateTime.equals(DeLa) || tranzactieDateTime.isAfter(DeLa) && tranzactieDateTime.isBefore(PanaLa)) {
-                getListaTranzactiiPeInterval.add(tranzactie);
-            }
 
-        }
-        return getListaTranzactiiPeInterval;
-
+        return this.getAllT().stream()
+                .filter(tranzactie -> {
+                    LocalDateTime tranzactieDateTime = LocalDateTime.parse(tranzactie.getDataSiOra(), formatter);
+                    return tranzactieDateTime.isEqual(DeLa) || (tranzactieDateTime.isAfter(DeLa) && tranzactieDateTime.isBefore(PanaLa));
+                })
+                .collect(Collectors.toList());
     }
 }
