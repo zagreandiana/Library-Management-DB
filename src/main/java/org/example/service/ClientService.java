@@ -16,6 +16,35 @@ public class ClientService {
         repository.save(client);
     }
 
+
+    // clasic method
+
+//    public  Client  youngClient() {
+//        List<Client> clients = (List<Client>) repository.findAll();
+//
+//        List<Client> client2 = new ArrayList<>();
+//        for (Client client : clients) {
+//            client2.add(client);
+//        }
+//        Collections.sort(client2, new Comparator<Client>() {
+//            @Override
+//            public int compare(Client o1, Client o2) {
+//                return (-o1.getAnulNasterii()) - (-o2.getAnulNasterii());
+//            }
+//        });
+//
+//        Client clientT = client2.get(0);
+//
+//        return clientT;
+//    }
+
+
+    public Client youngClient() {
+        return StreamSupport.stream(repository.findAll().spliterator(), false)
+                .max(Comparator.comparingInt(Client::getAnulNasterii))
+                .orElse(null);
+    }
+
     public Client youngClinet2() {
         List<Client> clients = (List<Client>) repository.findAll();
 
@@ -28,27 +57,6 @@ public class ClientService {
         }
         return last;
     }
-
-    public  Client  youngClient() {
-        List<Client> clients = (List<Client>) repository.findAll();
-
-        List<Client> client2 = new ArrayList<>();
-        for (Client client : clients) {
-            client2.add(client);
-        }
-        Collections.sort(client2, new Comparator<Client>() {
-            @Override
-            public int compare(Client o1, Client o2) {
-                return (-o1.getAnulNasterii()) - (-o2.getAnulNasterii());
-            }
-        });
-
-        Client clientT = client2.get(0);
-
-        return clientT;
-    }
-
-
 
 
     public Set<Client> getAllC() {
