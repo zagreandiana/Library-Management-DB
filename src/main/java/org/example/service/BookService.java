@@ -26,7 +26,6 @@ public class BookService {
     }
 
     public Set<Book> getAllB() {
-//        BookFileRepository();
         Iterable<Book> books = repository.findAll();
         return StreamSupport.stream(books.spliterator(),false).collect(Collectors.toSet());
     }
@@ -66,7 +65,7 @@ public class BookService {
 //        });
 
 
-//        sortare cu lambda
+
         book2.sort(new Comparator<Book>() {
             @Override
             public int compare(Book o1, Book o2) {
@@ -80,29 +79,28 @@ public class BookService {
         return bookB;
     }
 
+    // increase price clasic
 
-
-    public Set<Book> getListaCartiScumpite(float pragValoare, float procentaj)  {
-//        float noulPret = 1F;
-//        float pretNeschimbat = 1F;
-        Set<Book> listaFinala = new HashSet<>();
-        for (Book book : this.getAllB()) {
-            if (book.getPret() > pragValoare) {
-               float noulPret = book.getPret() + (book.getPret() * procentaj) / 100;
-                book.setPret(noulPret);
-
-            }
-//            else {
-//                pretNeschimbat = book.getPret();
+//    public Set<Book> getListaCartiScumpite(float pragValoare, float procentaj)  {
 //
-//                book.setPret(pretNeschimbat);
+//        Set<Book> listaFinala = new HashSet<>();
+//        for (Book book : this.getAllB()) {
+//            if (book.getPret() > pragValoare) {
+//               float noulPret = book.getPret() + (book.getPret() * procentaj) / 100;
+//                book.setPret(noulPret);
 //            }
-            listaFinala.add(book);
+//            listaFinala.add(book);
+//        }
+//        return listaFinala;
+//    }
 
-        }
-        return listaFinala;
 
-//        return getAllB();
+    // increase price with stream
+    public Set<Book> getListaCartiScumpite(float pragValoare, float procentaj) {
+        return this.getAllB().stream()
+                .filter(book -> book.getPret() > pragValoare)
+                .peek(book -> book.setPret(book.getPret() + (book.getPret() * procentaj) / 100))
+                .collect(Collectors.toSet());
     }
 
 
